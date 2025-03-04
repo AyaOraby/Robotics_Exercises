@@ -1,4 +1,4 @@
-# 🚀 Creating a Xacro File for Your Robot in ROS
+# 🚀 Creating a Xacro File 
 
 ## 📌 Overview
 In this task we will create a **Xacro file** for defining your robot model in ROS. Xacro (XML Macros) helps simplify URDF files by using macros and parameters. We will:
