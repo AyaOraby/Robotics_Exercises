@@ -1,4 +1,4 @@
-# **📷 Adding a Camera to Your Robot in ROS**
+# **📷 Adding a Camera to  Robot in ROS**
 
 ## **Objective**
 
@@ -8,6 +8,7 @@ In this exercise, you will:
 2. Use an STL, STEP, or DAE file for the camera in the `meshes` folder.
 3. Add an RGB camera plugin in the `.gazebo` file.
 4. Visualize the camera data in **RViz** and take a screenshot.
+5. Troubleshoot and ensure Gazebo launches correctly.
 
 ---
 
@@ -82,6 +83,20 @@ Edit the file and add the following content:
 ```xml
 <?xml version="1.0"?>
 <robot name="myrobot" xmlns:xacro="http://ros.org/wiki/xacro">
+
+    <!-- Base Link -->
+    <link name="base_link">
+        <visual>
+            <geometry>
+                <box size="0.3 0.3 0.1"/>
+            </geometry>
+        </visual>
+        <collision>
+            <geometry>
+                <box size="0.3 0.3 0.1"/>
+            </geometry>
+        </collision>
+    </link>
 
     <!-- Camera Link -->
     <link name="camera_link">
@@ -169,44 +184,51 @@ Edit it and add the following content:
 
 ---
 
-### **7️⃣ Build and Run the Robot in Gazebo**
+### **7️⃣ Troubleshooting Gazebo Issues**
 
-Go back to the workspace and rebuild:
+#### ✅ Check if Gazebo is Installed
+```bash
+gazebo --version
+```
+If not installed:
+```bash
+sudo apt update
+sudo apt install gazebo11 ros-noetic-gazebo-ros-pkgs ros-noetic-gazebo-ros-control
+```
+
+#### ✅ Clear ROS Logs & Cache
+```bash
+rm -rf ~/.gazebo ~/.ros/log
+```
+
+#### ✅ Launch Gazebo Separately
+```bash
+roscore
+rosrun gazebo_ros gazebo
+```
+Then manually spawn your robot:
+```bash
+rosparam set /robot_description -t ~/catkin_ws/src/lab4/robot_description/urdf/myrobot.xacro
+rosrun gazebo_ros spawn_model -param robot_description -urdf -model myrobot
+```
+
+---
+
+### **8️⃣ Build and Run the Robot in Gazebo**
 
 ```bash
 cd ~/catkin_ws
 catkin_make
 source devel/setup.bash
-```
-
-Now, launch Gazebo with your robot:
-
-```bash
 roslaunch lab4 myrobot_gazebo.launch
 ```
 
 ---
 
-### **8️⃣ Visualize in RViz**
-
-Open a new terminal and run RViz:
+### **9️⃣ Visualize in RViz**
 
 ```bash
 rviz
 ```
 
-1. In **RViz**, add a new **Image** display.
-2. Set the topic to `/camera/image_raw`.
-3. You should see the camera feed.
-
-Take a screenshot and submit it as proof of completion.
-
----
-
-## **✅ Submission Requirements**
-
-1. **Updated `myrobot.xacro`** file with the `camera_link` and joint.
-2. **Camera mesh file** (`camera_model.stl`) in the `meshes` folder.
-3. **Updated `myrobot.gazebo`** file with the RGB camera plugin.
-4. **Screenshot of camera data in RViz** (`/camera/image_raw`).
 
