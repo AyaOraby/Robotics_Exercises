@@ -1,26 +1,25 @@
-# **📝 Assignment: Custom ROS Publisher & Subscriber for TurtleBot3**
+# **📝 Exercise 1: Custom ROS Publisher & Subscriber**
 
 ### **Objective**
 
 In this assignment, you will:
 
-1. Create a **custom ROS message** to send commands (e.g., direction and speed) to the TurtleBot3.
-2. Write a **publisher node** that takes user input (direction and speed) and publishes it as a custom message.
-3. Write a **subscriber node** that listens to the custom message and controls the TurtleBot3 by sending velocity commands to the `/cmd_vel` topic.
-4. Test the system in a **Gazebo simulation** and observe the TurtleBot3 moving based on the commands.
+1. Create a **custom ROS message** to send two integers.
+2. Write a **publisher node** that sends two integers at a fixed rate.
+3. Write a **subscriber node** that listens to the custom message, sums the integers, and prints the result.
+4. Create a **launch file** to automate the process.
 
 ---
 
 ## **📂 ROS Package Details**
 
-* **Package Name** : `turtlebot3_custom_control`
-* **Custom Message Name** : `Command.msg`
+* **Package Name** : `custom_msg_example`
+* **Custom Message Name** : `TwoInts.msg`
 * **Topics** :
-  * `/turtle_control` (published by your publisher)
-  * `/cmd_vel` (published by your subscriber to control TurtleBot3)
+  * `/sum` (published by the publisher node)
 * **Node Names** :
-  * `turtle_control_publisher` (publisher node)
-  * `turtle_control_subscriber` (subscriber node)
+  * `two_ints_publisher` (publisher node)
+  * `two_ints_subscriber` (subscriber node)
 
 ---
 
@@ -28,14 +27,8 @@ In this assignment, you will:
 
 Before starting, make sure you have:
 
-* **ROS Noetic installed** .
-* **TurtleBot3 packages installed** :
-
-```bash
-sudo apt install ros-noetic-turtlebot3*
-```
-
-* **Your ROS workspace set up** (`~/catkin_ws`).
+* **ROS Noetic installed**
+* **Your ROS workspace set up** (`~/catkin_ws`)
 
 ---
 
@@ -43,196 +36,208 @@ sudo apt install ros-noetic-turtlebot3*
 
 ### **1️⃣ Create the ROS Package**
 
-* Create a package named `turtlebot3_custom_control`.
-* Add the required dependencies.
-
-  ```bash
-  cd ~/catkin_ws/src
-  catkin_create_pkg turtlebot3_custom_control rospy std_msgs geometry_msgs message_generation message_runtime
-  ```
-
-### **2️⃣ Create a Custom Message**
-
-1. Navigate to the package folder:
-   ```bash
-   cd ~/catkin_ws/src/turtlebot3_custom_control
-   ```
-2. Create a `msg` folder and define the message:
-   ```bash
-   mkdir msg
-   nano msg/Command.msg
-   ```
-3. Add the following fields to `Command.msg`:
-   ```
-   string direction
-   float32 speed
-   ```
-4. Modify `CMakeLists.txt` to include:
-   ```cmake
-   add_message_files(
-     FILES
-     Command.msg
-   )
-   generate_messages(
-     DEPENDENCIES
-     std_msgs
-   )
-   ```
-5. Modify `package.xml` to include:
-   ```xml
-   <depend>message_generation</depend>
-   <depend>message_runtime</depend>
-   ```
-6. Build the package:
-   ```bash
-   cd ~/catkin_ws
-   catkin_make
-   source devel/setup.bash
-   ```
-
-### **3️⃣ Implement the Publisher**
-
-1. Create a `scripts` directory and a Python publisher script:
-   ```bash
-   mkdir scripts
-   nano scripts/turtle_control_publisher.py
-   ```
-2. Add the following code:
-   ```python
-   #!/usr/bin/env python
-   import rospy
-   from turtlebot3_custom_control.msg import Command
-
-   def publisher():
-       rospy.init_node('turtle_control_publisher', anonymous=True)
-       pub = rospy.Publisher('/turtle_control', Command, queue_size=10)
-       rate = rospy.Rate(1)
-       while not rospy.is_shutdown():
-           msg = Command()
-           msg.direction = "forward"
-           msg.speed = 0.5
-           rospy.loginfo("Publishing: direction=%s, speed=%f", msg.direction, msg.speed)
-           pub.publish(msg)
-           rate.sleep()
-
-   if __name__ == '__main__':
-       try:
-           publisher()
-       except rospy.ROSInterruptException:
-           pass
-   ```
-3. Make the script executable:
-   ```bash
-   chmod +x scripts/turtle_control_publisher.py
-   ```
-
-### **4️⃣ Implement the Subscriber**
-
-1. Create the subscriber script:
-   ```bash
-   nano scripts/turtle_control_subscriber.py
-   ```
-2. Add the following code:
-   ```python
-   #!/usr/bin/env python
-   import rospy
-   from geometry_msgs.msg import Twist
-   from turtlebot3_custom_control.msg import Command
-
-   def callback(msg):
-       rospy.loginfo("Received: direction=%s, speed=%f", msg.direction, msg.speed)
-       vel_msg = Twist()
-       if msg.direction == "forward":
-           vel_msg.linear.x = msg.speed
-       elif msg.direction == "backward":
-           vel_msg.linear.x = -msg.speed
-       elif msg.direction == "left":
-           vel_msg.angular.z = msg.speed
-       elif msg.direction == "right":
-           vel_msg.angular.z = -msg.speed
-       pub.publish(vel_msg)
-
-   rospy.init_node('turtle_control_subscriber', anonymous=True)
-   pub = rospy.Publisher('/cmd_vel', Twist, queue_size=10)
-   rospy.Subscriber('/turtle_control', Command, callback)
-   rospy.spin()
-   ```
-3. Make the script executable:
-   ```bash
-   chmod +x scripts/turtle_control_subscriber.py
-   ```
-
-### **5️⃣ Run the TurtleBot3 Simulation**
-
-1. **Export the TurtleBot3 model**:
-   ```bash
-   export TURTLEBOT3_MODEL=burger
-   ```
-2. **Launch the simulation**:
-   ```bash
-   roslaunch turtlebot3_gazebo turtlebot3_empty_world.launch
-   ```
-
-### **6️⃣ Run Your Nodes**
-
-1. In one terminal, run:
-   ```bash
-   rosrun turtlebot3_custom_control turtle_control_publisher.py
-   ```
-2. In another terminal, run:
-   ```bash
-   rosrun turtlebot3_custom_control turtle_control_subscriber.py
-   ```
-
-### **7️⃣ Verify the Topics**
-
-To check if messages are being published:
-```bash
-rostopic echo /turtle_control
-```
-
-To check if TurtleBot3 is moving:
-```bash
-rostopic echo /cmd_vel
-```
-
----
-
-## **📌 Submission Requirements**
-
-* A working **ROS package** (.zip).
-* A properly defined **custom message**.
-* Publisher and subscriber scripts.
-* Proof of TurtleBot3 movement (short video).
-
----
-
-## **README File**
-
-**Title: TurtleBot3 Custom Control**
-
-**Description:** This package implements a custom ROS publisher and subscriber to control a TurtleBot3 in Gazebo simulation using a custom message.
-
-**Installation & Setup:**
 ```bash
 cd ~/catkin_ws/src
-catkin_create_pkg turtlebot3_custom_control rospy std_msgs geometry_msgs message_generation message_runtime
+catkin_create_pkg custom_msg_example rospy std_msgs message_generation message_runtime
 cd ~/catkin_ws
 catkin_make
 source devel/setup.bash
 ```
 
-**Running the Simulation & Nodes:**
+### **2️⃣ Create a Custom Message**
+
+1. Navigate to the package folder:
+
 ```bash
-export TURTLEBOT3_MODEL=burger
-roslaunch turtlebot3_gazebo turtlebot3_empty_world.launch
-rosrun turtlebot3_custom_control turtle_control_publisher.py
-rosrun turtlebot3_custom_control turtle_control_subscriber.py
+cd ~/catkin_ws/src/custom_msg_example
 ```
 
-**Verification Commands:**
+2. Create a `msg` folder and define the message:
+
 ```bash
-rostopic echo /turtle_control
-rostopic echo /cmd_vel
+mkdir msg
+nano msg/TwoInts.msg
 ```
+
+3. Add the following fields to `TwoInts.msg`:
+
+```bash
+int32 a
+int32 b
+```
+
+4. Modify `CMakeLists.txt` to include:
+
+```cmake
+add_message_files(
+  FILES
+  TwoInts.msg
+)
+generate_messages(
+  DEPENDENCIES
+  std_msgs
+)
+catkin_install_python(PROGRAMS
+  scripts/two_ints_publisher.py
+  scripts/two_ints_subscriber.py
+  DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
+```
+
+5. Modify `package.xml` to include:
+
+```xml
+<depend>message_generation</depend>
+<depend>message_runtime</depend>
+```
+
+6. Build the package:
+
+```bash
+cd ~/catkin_ws
+catkin_make
+source devel/setup.bash
+```
+
+### **3️⃣ Implement the Publisher**
+
+1. Create a `scripts` directory and a Python publisher script:
+
+```bash
+mkdir scripts
+nano scripts/two_ints_publisher.py
+```
+
+2. Add the following code:
+
+```python
+#!/usr/bin/env python3
+import rospy
+from custom_msg_example.msg import TwoInts
+
+def send_two_ints():
+    rospy.init_node('send_two_ints_node', anonymous=True)
+    pub = rospy.Publisher('sum', TwoInts, queue_size=10)
+    rate = rospy.Rate(1)
+    while not rospy.is_shutdown():
+        msg = TwoInts()
+        msg.a = 5
+        msg.b = 10
+        rospy.loginfo("Publishing: a = %d, b = %d", msg.a, msg.b)
+        pub.publish(msg)
+        rate.sleep()
+
+if __name__ == '__main__':
+    try:
+        send_two_ints()
+    except rospy.ROSInterruptException:
+        pass
+```
+
+3. Make the script executable:
+
+```bash
+chmod +x scripts/two_ints_publisher.py
+```
+
+### **4️⃣ Implement the Subscriber**
+
+1. Create the subscriber script:
+
+```bash
+nano scripts/two_ints_subscriber.py
+```
+
+2. Add the following code:
+
+```python
+#!/usr/bin/env python3
+import rospy
+from custom_msg_example.msg import TwoInts
+
+def callback(msg):
+    sum_result = msg.a + msg.b
+    rospy.loginfo("Received: a = %d, b = %d, Sum = %d", msg.a, msg.b, sum_result)
+
+def subscriber():
+    rospy.init_node('two_ints_subscriber', anonymous=True)
+    rospy.Subscriber('sum', TwoInts, callback)
+    rospy.spin()
+
+if __name__ == '__main__':
+    subscriber()
+```
+
+3. Make the script executable:
+
+```bash
+chmod +x scripts/two_ints_subscriber.py
+```
+
+### **5️⃣ Run the System**
+
+1. **Start ROS Master**:
+
+```bash
+roscore
+```
+
+2. **Run the Publisher Node**:
+
+```bash
+rosrun custom_msg_example two_ints_publisher.py
+```
+
+3. **Run the Subscriber in another terminal**:
+
+```bash
+rosrun custom_msg_example two_ints_subscriber.py
+```
+
+### **6️⃣ Create a Launch File**
+
+1. **Create a `launch` Folder**:
+
+```bash
+cd ~/catkin_ws/src/custom_msg_example
+mkdir launch
+```
+
+2. **Create a Launch File**:
+
+```bash
+nano launch/two_ints.launch
+```
+
+3. **Add the following content**:
+
+```xml
+<launch>
+    <node pkg="custom_msg_example" type="two_ints_publisher.py" name="two_ints_publisher" output="screen" />
+    <node pkg="custom_msg_example" type="two_ints_subscriber.py" name="two_ints_subscriber" output="screen" />
+</launch>
+```
+
+4. **Build the Workspace**:
+
+```bash
+cd ~/catkin_ws
+catkin_make
+source devel/setup.bash
+```
+
+5. **Run the Launch File**:
+
+```bash
+roslaunch custom_msg_example two_ints.launch
+```
+
+This will:
+
+1. Start the ROS Master (if not already running).
+2. Launch the `two_ints_publisher` and `two_ints_subscriber` nodes.
+3. Display the output of both nodes in the terminal.
+
+---
+
 
