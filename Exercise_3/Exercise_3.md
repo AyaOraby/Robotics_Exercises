@@ -159,20 +159,14 @@ A **caster wheel** helps balance the robot.
 ## 🛠️ Running the Xacro File
 Once the Xacro file is ready, you can visualize it using **RViz**:
 
-1. **Convert the Xacro file to URDF**
+
+
+ **Launch the URDF model in RViz**
 ```bash
-rosrun xacro xacro ~/catkin_ws/src/my_robot/urdf/myrobot.xacro > myrobot.urdf
+roslaunch urdf_tutorial display.launch model:=my_robot.xacro
 ```
 
-2. **Launch the URDF model in RViz**
-```bash
-roslaunch urdf_tutorial display.launch model:=~/catkin_ws/src/my_robot/urdf/myrobot.urdf
-```
 
-3. **Verify the URDF file**
-```bash
-check_urdf ~/catkin_ws/src/my_robot/urdf/myrobot.urdf
-```
 
 ---
 
