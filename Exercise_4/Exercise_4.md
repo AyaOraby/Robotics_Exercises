@@ -195,18 +195,4 @@ Open a new terminal and run RViz:
 rviz
 ```
 
-1. In **RViz**, add a new **Image** display.
-2. Set the topic to `/camera/image_raw`.
-3. You should see the camera feed.
-
-Take a screenshot and submit it as proof of completion.
-
----
-
-## **✅ Submission Requirements**
-
-1. **Updated `myrobot.xacro`** file with the `camera_link` and joint.
-2. **Camera mesh file** (`camera_model.stl`) in the `meshes` folder.
-3. **Updated `myrobot.gazebo`** file with the RGB camera plugin.
-4. **Screenshot of camera data in RViz** (`/camera/image_raw`).
 
