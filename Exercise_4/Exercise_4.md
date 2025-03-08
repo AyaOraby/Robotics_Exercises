@@ -2,18 +2,18 @@
 
 ## **Objective**
 
-In this exercise, you will:
+In this exercise, we will:
 
 1. Create a `camera_link` in the `myrobot.xacro` file.
 2. Use an STL, STEP, or DAE file for the camera in the `meshes` folder.
 3. Add an RGB camera plugin in the `.gazebo` file.
-4. Visualize the camera data in **RViz** and take a screenshot.
+4. Visualize the camera data in **RViz**
 
 ---
 
 ## **📂 Directory Structure**
 
-You will create the following directory structure:
+ create the following directory structure:
 
 ```
 lab4/
@@ -36,7 +36,7 @@ lab4/
 
 ### **1️⃣ Create the ROS Package**
 
-Navigate to your workspace and create a new package:
+Navigate to  workspace and create a new package:
 
 ```bash
 cd ~/catkin_ws/src
@@ -61,7 +61,7 @@ mkdir -p launch robot_description/meshes robot_description/urdf
 
 ### **3️⃣ Add the Camera Mesh File**
 
-Copy your camera model file to the `meshes` folder:
+Copy  camera model file to the `meshes` folder:
 
 ```bash
 cp /home/philomath/Desktop/camera_model.stl ~/catkin_ws/src/lab4/robot_description/meshes/
@@ -179,7 +179,7 @@ catkin_make
 source devel/setup.bash
 ```
 
-Now, launch Gazebo with your robot:
+Now, launch Gazebo with robot:
 
 ```bash
 roslaunch lab4 myrobot_gazebo.launch
