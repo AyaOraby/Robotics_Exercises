@@ -1,4 +1,4 @@
-# **📷 Adding a Camera to Your Robot in ROS**
+# **📷 Adding a Camera to  Robot in ROS**
 
 ## **Objective**
 
