@@ -86,8 +86,3 @@ roslaunch turtlebot3_arabic_voice process_audio.launch
 - Update the audio file path in `process_audio_file.py` as needed.
 
 ---
-
-## 🧠 Author
-
-**Philomath**  
-Arabic voice interface for TurtleBot3 🤖🗣️
