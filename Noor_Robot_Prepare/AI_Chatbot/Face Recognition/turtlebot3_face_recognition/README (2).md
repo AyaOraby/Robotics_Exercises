@@ -98,7 +98,4 @@ bash test_face_detection.sh
 
 ---
 
-## 🧠 Author
 
-**Philomath**  
-Custom face recognition tools for TurtleBot3 🤖
