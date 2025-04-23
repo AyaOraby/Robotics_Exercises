@@ -1,0 +1,3 @@
+<launch>
+    <node pkg="turtlebot3_arabic_voice" type="arabic_voice_recognition.py" name="arabic_voice_recognition" output="screen"/>
+</launch>

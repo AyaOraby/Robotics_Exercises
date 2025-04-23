@@ -1,0 +1,6 @@
+<launch>
+    <node pkg="turtlebot3_arabic_voice" 
+          type="process_audio_file.py" 
+          name="audio_file_processor" 
+          output="screen"/>
+</launch>
